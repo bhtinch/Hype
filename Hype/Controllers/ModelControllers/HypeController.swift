@@ -148,6 +148,27 @@ class HypeController {
         publicDB.add(operation)
     }
     
+    func betterDelete(_ hype: Hype, completion: @escaping (Bool) -> Void) {
+        guard let index = hypes.firstIndex(of: hype) else { completion(false) ; return }
+        hypes.remove(at: index)
+        
+        publicDB.delete(withRecordID: hype.recordID) { (recordID, error) in
+            if let error = error {
+                print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
+                completion(false)
+                return
+            }
+            
+            if self.hypes.map({ $0.recordID }).contains(recordID) {
+                completion(false)
+                return
+            }
+            
+            print("Better delete works...")
+            completion(true)
+        }
+    }
+    
     /**
      Subscribes the device to receive remote notifications from changes made to the database
      
