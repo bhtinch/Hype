@@ -34,6 +34,7 @@ class Hype {
     // Add userReference property, has to be optional for existing Hypes.
     // Add userRefrence to Designated Init, Failable Init, and CKRecord Extension
     var userReference: CKRecord.Reference?
+    var user: User?
     // MARK: - Day 4 Changes
     // Add CKAsset functionality
     var hypePhoto: UIImage? {

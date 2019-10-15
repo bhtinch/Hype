@@ -10,12 +10,6 @@ import UIKit
 
 class HypeTableViewCell: UITableViewCell {
     
-    var user: User? {
-        didSet {
-            updateUser()
-        }
-    }
-    
     var hype: Hype? {
         didSet {
             updateViews()
@@ -43,9 +37,23 @@ class HypeTableViewCell: UITableViewCell {
     func updateViews() {
         hypeImageView.image = nil
         guard let hype = hype else { return }
+        updateUser(for: hype)
+        setImageView(for: hype)
         hypeLabel.text = hype.body
         dateLabel.text = hype.timestamp.formatDate()
-        
+    }
+    
+    func updateUser(for hype: Hype) {
+        if hype.user == nil {
+            UserController.shared.fetchUserFor(hype) { (user) in
+                guard let user = user else { return }
+                hype.user = user
+                self.setUserInfo(for: user)
+            }
+        }
+    }
+    
+    func setImageView(for hype: Hype) {
         if let hypeImage = hype.hypePhoto {
             hypeImageView.image = hypeImage
             hypeImageView.isHidden = false
@@ -54,11 +62,10 @@ class HypeTableViewCell: UITableViewCell {
         }
     }
     
-    func updateUser() {
-        guard let user = user else { return }
+    func setUserInfo(for user: User) {
         DispatchQueue.main.async {
-            self.usernameLabel.text = user.username
             self.profileImageView.image = user.profilePhoto
+            self.usernameLabel.text = user.username
         }
     }
 }

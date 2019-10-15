@@ -106,11 +106,11 @@ extension HypeListViewController: UITableViewDelegate, UITableViewDataSource {
         
         cell?.hype = hype
         
-        UserController.shared.fetchUserFor(hype) { (user) in
-            if let user = user {
-                cell?.user = user
-            }
-        }
+//        UserController.shared.fetchUserFor(hype) { (user) in
+//            if let user = user {
+//                cell?.user = user
+//            }
+//        }
         
         return cell ?? UITableViewCell()
     }
