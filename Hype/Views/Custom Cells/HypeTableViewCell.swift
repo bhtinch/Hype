@@ -35,7 +35,7 @@ class HypeTableViewCell: UITableViewCell {
     }
     
     func updateViews() {
-        hypeImageView.image = nil
+//        hypeImageView.image = nil
         guard let hype = hype else { return }
         updateUser(for: hype)
         setImageView(for: hype)
