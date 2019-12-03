@@ -93,6 +93,8 @@ In this four day project students will learn the basics of the CloudKit framewor
 - Implement the didSelectRowAt tableView method to grab the hype you wish to edit and pass it into the presentHypeAlert(for hype:) method
 
 #### CKSubsription
+Add the Background Modes capability and check Remote Notifications. This will allow your app to receive remote notificaitons while it is not active. 
+
 ##### AppDelegate
 - Import UserNotificationCenter and request authorization for notificatino
 - Import CloudKit to implement didRegisterForRemoteNotificationWithDeviceToken, didFailToRegisterForRemoteNotificationsWithError, and didReceiveRemoteNotifaction
