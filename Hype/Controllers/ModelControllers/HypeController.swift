@@ -94,8 +94,6 @@ class HypeController {
         - success: Boolean value indicating success or falure of the CKModifyRecordsOperation
      */
     func update(_ hype: Hype, completion: @escaping (_ success: Bool) -> Void) {
-        // Ensure that only the User that created the hype can update it
-        guard hype.userReference?.recordID == UserController.shared.currentUser?.recordID else { completion(false) ; return }
         // Step 2.a Create the record to save (update)
         let record = CKRecord(hype: hype)
         // Step 2 - Create the operation

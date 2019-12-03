@@ -76,15 +76,15 @@ extension CKRecord {
      */
     convenience init(hype: Hype) {
         self.init(recordType: HypeStrings.recordTypeKey, recordID: hype.recordID)
-        
+        // Set key value pairs for non-optional values.
         self.setValuesForKeys([
             HypeStrings.bodyKey : hype.body,
-            HypeStrings.timestampKey : hype.timestamp,
-            HypeStrings.userReferenceKey : hype.userReference
+            HypeStrings.timestampKey : hype.timestamp
         ])
-        
-//        self.setValue(hype.body, forKey: HypeStrings.bodyKey)
-//        self.setValue(hype.timestamp, forKey: HypeStrings.timestampKey)
+        // Conditionally set key value pairs for optional values. Cannot set a nil value for a key in the database.
+        if let reference = hype.userReference {
+            self.setValue(reference, forKey: HypeStrings.userReferenceKey)
+        }
     }
 }
 
