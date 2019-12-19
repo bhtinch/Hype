@@ -17,19 +17,26 @@ class UserController {
     var currentUser: User?
     let publicDB = CKContainer.default().publicCloudDatabase
     
+    enum UserError: Error {
+        case ckError(Error)
+        case couldNotUnwrap
+        case unexpectedRecordsFound
+        case noUserLoggedIn
+    }
+    
     /**
      Creates a User and saves it to CloudKit
      
      - Parameters:
         - username: String value to pass into the User initializer
         - completion: Escaping completion block for the method
-        - success: Boolean value indicating success or failure to save CKRecord to CloudKit
+        - result: Result found in the completion block with success returning an optional User and failure returning a UserError
      */
-    func createUserWith(_ username: String, completion: @escaping (_ success: Bool) -> Void) {
+    func createUserWith(_ username: String, completion: @escaping (_ result: Result<User?, UserError>) -> Void) {
         // Fetch the AppleID User reference and handle User creation in the closure
         fetchAppleUserReference { (reference) in
             // Unwrap the reference
-            guard let reference = reference else { completion(false) ; return }
+            guard let reference = reference else { completion(.failure(.noUserLoggedIn)) ; return }
             // Initialize a new User object, passing in the username parameter and the unwrapped reference
             let newUser = User(username: username, appleUserReference: reference)
             // Create a CKRecord from the user just created
@@ -39,16 +46,16 @@ class UserController {
                 // Handle the optional error
                 if let error = error {
                     print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
-                    completion(false)
+                    completion(.failure(.ckError(error)))
                 }
                 // Unwrap the saved record, unwrap the user initialized from that record
                 guard let record = record,
                     let savedUser = User(ckRecord: record)
-                    else { completion(false) ; return }
+                    else { completion(.failure(.couldNotUnwrap)) ; return }
                 // Set the currentUser as the savedUser and complete true
                 self.currentUser = savedUser
                 print("Created User: \(record.recordID.recordName) successfully")
-                completion(true)
+                completion(.success(savedUser))
             }
         }
     }
@@ -58,12 +65,12 @@ class UserController {
      
      - Parameters:
         - completion: Escaping completion block for the method
-        - success: Boolean value indicating success or falure to fetch the object from CloudKit
+        - result: Result found in the completion block with success returning an optional User and failure returning a UserError
      */
-    func fetchUser(completion: @escaping (_ success: Bool) -> Void) {
+    func fetchUser(completion: @escaping (_ result: Result<User?, UserError>) -> Void) {
         // Step 4 - Fetch and unwrap the appleUserRef to pass in for the predicate
         fetchAppleUserReference { (reference) in
-            guard let reference = reference else { completion(false) ; return }
+            guard let reference = reference else { completion(.failure(.noUserLoggedIn)) ; return }
             // Step 3 - Init the predicate needed by the query
             let predicate = NSPredicate(format: "%K == %@", argumentArray: [UserStrings.appleUserRefKey, reference])
             // Step 2 - Init the query to pass into the .perform method
@@ -73,16 +80,16 @@ class UserController {
                 // Handle the optional error
                 if let error = error {
                     print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
-                    completion(false)
+                    completion(.failure(.ckError(error)))
                 }
                 // Unwrap the record and foundUser initialized from the record
                 guard let record = records?.first,
                     let foundUser = User(ckRecord: record)
-                    else { completion(false) ; return }
+                    else { completion(.failure(.couldNotUnwrap)) ; return }
                 // Set the current user to the foundUser and complete true
                 self.currentUser = foundUser
-                print("Fetchec User: \(record.recordID.recordName) successfully")
-                completion(true)
+                print("Fetched User: \(record.recordID.recordName) successfully")
+                completion(.success(foundUser))
             }
         }
     }
