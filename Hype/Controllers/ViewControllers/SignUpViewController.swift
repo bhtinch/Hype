@@ -23,10 +23,9 @@ class SignUpViewController: UIViewController {
     
     @IBAction func signUpButtonTapped(_ sender: Any) {
         guard let username = usernameTextField.text, !username.isEmpty else { return }
-        UserController.shared.createUserWith(username, profilePhoto: image) { (success) in
-            if success {
-                self.presentHypeListVC()
-            }
+        UserController.shared.createUserWith(username, profilePhoto: image) { (result) in
+            guard let _ = try? result.get() else { return }
+            self.presentHypeListVC()
         }
     }
     
@@ -36,10 +35,9 @@ class SignUpViewController: UIViewController {
     }
     
     func fetchUser() {
-        UserController.shared.fetchUser { (success) in
-            if success {
-                self.presentHypeListVC()
-            }
+        UserController.shared.fetchUser { (result) in
+            guard let _ = try? result.get() else { return }
+            self.presentHypeListVC()
         }
     }
     

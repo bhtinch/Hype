@@ -30,10 +30,9 @@ class HypePhotoViewController: UIViewController {
             let image = self.image
             else { return }
         
-        HypeController.shared.saveHype(with: text, photo: image) { (success) in
-            if success {
-                self.dismissView()
-            }
+        HypeController.shared.saveHype(with: text, photo: image) { (result) in
+            guard let _ = try? result.get() else { return }
+            self.dismissView()
         }
     }
     

@@ -44,10 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        HypeController.shared.fetchAllHypes { (success) in
-            if success {
-                // TODO: - Notification
-            }
+        HypeController.shared.fetchAllHypes { (result) in
         }
     }
     
