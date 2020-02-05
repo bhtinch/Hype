@@ -80,6 +80,10 @@ In this four day project students will learn the basics of the CloudKit framewor
 ### Starting the project
 #### CKModifyRecordsOperation
 
+##### Model
+- Update the model class to have a recordID Property.
+- Extend the class to conform to the equatable protocol. (allows us to safely use delete)
+
 ##### ModelController
 - Delcare the update(hype:) and delete(hype:) method declaration
 - In update(hype:) call the .add(Operation) method on the publicDB.
