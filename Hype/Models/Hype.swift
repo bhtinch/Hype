@@ -81,6 +81,7 @@ extension CKRecord {
 }
 
 // MARK: - Day 2 Changes
+
 // MARK: - Equatable
 extension Hype: Equatable {
     static func == (lhs: Hype, rhs: Hype) -> Bool {
