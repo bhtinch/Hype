@@ -58,7 +58,7 @@ extension User {
             let appleUserRef = ckRecord[UserStrings.appleUserRefKey] as? CKRecord.Reference
             else { return nil }
         
-        self.init(username: username, appleUserReference: appleUserRef)
+        self.init(username: username, recordID: ckRecord.recordID, appleUserReference: appleUserRef)
     }
 }
 

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		551FC84923ECCECB00C52E07 /* HypeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FC84823ECCECB00C52E07 /* HypeError.swift */; };
+		551FC84B23ECCEEE00C52E07 /* UserError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FC84A23ECCEEE00C52E07 /* UserError.swift */; };
 		625E1200233C10690076B139 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 625E11FF233C10690076B139 /* AppDelegate.swift */; };
 		625E1202233C10690076B139 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 625E1201233C10690076B139 /* SceneDelegate.swift */; };
 		625E1207233C10690076B139 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 625E1205233C10690076B139 /* Main.storyboard */; };
@@ -24,6 +26,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		551FC84823ECCECB00C52E07 /* HypeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HypeError.swift; sourceTree = "<group>"; };
+		551FC84A23ECCEEE00C52E07 /* UserError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserError.swift; sourceTree = "<group>"; };
 		625E11FC233C10690076B139 /* Hype.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hype.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		625E11FF233C10690076B139 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		625E1201233C10690076B139 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -162,6 +166,8 @@
 			isa = PBXGroup;
 			children = (
 				625E1224233C143A0076B139 /* DateExtension.swift */,
+				551FC84823ECCECB00C52E07 /* HypeError.swift */,
+				551FC84A23ECCEEE00C52E07 /* UserError.swift */,
 			);
 			path = "Helpers+Extensions";
 			sourceTree = "<group>";
@@ -238,10 +244,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				551FC84923ECCECB00C52E07 /* HypeError.swift in Sources */,
 				62DBDD17233D482C00AB0200 /* UserController.swift in Sources */,
 				625E1200233C10690076B139 /* AppDelegate.swift in Sources */,
 				625E1225233C143A0076B139 /* DateExtension.swift in Sources */,
 				62DBDD15233D480800AB0200 /* SignUpViewController.swift in Sources */,
+				551FC84B23ECCEEE00C52E07 /* UserError.swift in Sources */,
 				625E121E233C13C00076B139 /* HypeController.swift in Sources */,
 				625E1223233C13F90076B139 /* HypeListViewController.swift in Sources */,
 				625E1202233C10690076B139 /* SceneDelegate.swift in Sources */,
