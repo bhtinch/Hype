@@ -45,8 +45,14 @@ class HypeListViewController: UIViewController {
     
     @objc func loadData() {
         HypeController.shared.fetchAllHypes { (result) in
-            guard let _ = try? result.get() else { return }
-            self.updateViews()
+            switch result {
+            case .success(let hypes):
+                guard let hypes = hypes else {return}
+                HypeController.shared.hypes = hypes
+                self.updateViews()
+            case .failure(let error):
+                print(error.errorDescription)
+            }
         }
     }
     
@@ -63,8 +69,14 @@ class HypeListViewController: UIViewController {
         let addHypeAction = UIAlertAction(title: "Send", style: .default) { (_) in
             guard let text = alertController.textFields?.first?.text, !text.isEmpty else { return }
             HypeController.shared.saveHype(with: text) { (result) in
-                guard let _ = try? result.get() else { return }
-                self.updateViews()
+                switch result {
+                case .success(let hype):
+                    guard let hype = hype else {return}
+                    HypeController.shared.hypes.insert(hype, at: 0)
+                    self.updateViews()
+                case .failure(let error):
+                    print(error.errorDescription)
+                }
             }
         }
         
