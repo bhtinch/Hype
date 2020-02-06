@@ -47,7 +47,6 @@ class HypeListViewController: UIViewController {
         HypeController.shared.fetchAllHypes { (result) in
             switch result {
             case .success(let hypes):
-                guard let hypes = hypes else {return}
                 HypeController.shared.hypes = hypes
                 self.updateViews()
             case .failure(let error):
@@ -75,7 +74,12 @@ class HypeListViewController: UIViewController {
             if let hype = hype {
                 hype.body = text
                 HypeController.shared.update(hype) { (result) in
-                    self.updateViews()
+                    switch result {
+                    case .success(_):
+                        self.updateViews()
+                    case .failure(let error):
+                        print(error.errorDescription)
+                    }
                 }
             } else {
                 HypeController.shared.saveHype(with: text) { (result) in
