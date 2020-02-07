@@ -45,8 +45,14 @@ class HypeListViewController: UIViewController {
     
     @objc func loadData() {
         HypeController.shared.fetchAllHypes { (result) in
-            guard let _ = try? result.get() else { return }
-            self.updateViews()
+            switch result {
+            case .success(let hypes):
+                guard let hypes = hypes else {return}
+                HypeController.shared.hypes = hypes
+                self.updateViews()
+            case .failure(let error):
+                print(error.errorDescription)
+            }
         }
     }
     
@@ -69,13 +75,23 @@ class HypeListViewController: UIViewController {
             if let hype = hype {
                 hype.body = text
                 HypeController.shared.update(hype) { (result) in
-                    guard let _ = try? result.get() else { return }
-                    self.updateViews()
+                    switch result {
+                    case .success(_):
+                        self.updateViews()
+                    case .failure(let error):
+                        print(error.errorDescription)
+                    }
                 }
             } else {
                 HypeController.shared.saveHype(with: text, photo: nil) { (result) in
-                    guard let _ = try? result.get() else { return }
-                    self.updateViews()
+                    switch result {
+                    case .success(let hype):
+                        guard let hype = hype else {return}
+                        HypeController.shared.hypes.insert(hype, at: 0)
+                        self.updateViews()
+                    case .failure(let error):
+                        print(error.errorDescription)
+                    }
                 }
             }
         }
@@ -124,10 +140,14 @@ extension HypeListViewController: UITableViewDelegate, UITableViewDataSource {
             let hypeToDelete = HypeController.shared.hypes[indexPath.row]
             guard let index = HypeController.shared.hypes.firstIndex(of: hypeToDelete) else { return }
             HypeController.shared.delete(hypeToDelete) { (result) in
-                guard let _ = try? result.get() else { return }
-                HypeController.shared.hypes.remove(at: index)
-                DispatchQueue.main.async {
-                    tableView.deleteRows(at: [indexPath], with: .fade)
+                switch result {
+                case .success(_):
+                    HypeController.shared.hypes.remove(at: index)
+                    DispatchQueue.main.async {
+                        tableView.deleteRows(at: [indexPath], with: .fade)
+                    }
+                case .failure(let error):
+                    print(error.errorDescription)
                 }
             }
         }

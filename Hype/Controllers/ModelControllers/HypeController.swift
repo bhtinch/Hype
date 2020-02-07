@@ -18,13 +18,6 @@ class HypeController {
     /// Source of Truth array of Hype objects
     var hypes: [Hype] = []
     
-    enum HypeError: Error {
-        case ckError(Error)
-        case couldNotUnwrap
-        case unexpectedRecordsFound
-        case noUserLoggedIn
-    }
-    
     /**
      Saves a Hype object to CloudKit
      
@@ -33,8 +26,8 @@ class HypeController {
      - completion: Escaping completion block for the method
      - success: Boolean value returned in the completion block indicating a success or failure on saving the CKRecord to CloudKit
      */
-    func saveHype(with text: String, photo: UIImage?, completion: @escaping (_ result: Result<Hype?, HypeError>) -> Void) {
-        guard let currentUser = UserController.shared.currentUser else { completion(.failure(.noUserLoggedIn)) ; return }
+    func saveHype(with text: String, photo: UIImage?, completion: @escaping (Result<Hype?, HypeError>) -> Void) {
+        guard let currentUser = UserController.shared.currentUser else { return completion(.failure(.noUserLoggedIn)) }
         let reference = CKRecord.Reference(recordID: currentUser.recordID, action: .deleteSelf)
         // Inititialize a Hype object with the text value passed in as a parameter
         let newHype = Hype(body: text, userReference: reference, hypePhoto: photo)
@@ -44,18 +37,14 @@ class HypeController {
         publicDB.save(hypeRecord) { (record, error) in
             // Handle the optional error
             if let error = error {
-                print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
-                completion(.failure(.ckError(error)))
-                return
+                return completion(.failure(.ckError(error)))
             }
             // Unwrap the CKRecord that was saved
             guard let record = record,
                 // Re-create the same Hype object from that record that we know was saved
                 let savedHype = Hype(ckRecord: record)
-                else { completion(.failure(.couldNotUnwrap)) ; return }
+                else { return completion(.failure(.couldNotUnwrap)) }
             print("Saved Hype: \(record.recordID.recordName) successfully")
-            // Insert the successfully saved Hype object at the first index of our Source of Truth array
-            self.hypes.insert(savedHype, at: 0)
             // Complete with success
             completion(.success(savedHype))
         }
@@ -68,7 +57,7 @@ class HypeController {
      - completion: Escaping completion block for the method
      - success: Boolean value returned in the completion block indicating a success or failure on fetching the CKRecords from the database
      */
-    func fetchAllHypes(completion: @escaping (_ result: Result<[Hype]?, HypeError>) -> Void) {
+    func fetchAllHypes(completion: @escaping (Result<[Hype]?, HypeError>) -> Void) {
         // Step 3 - Create the Predicate needed for the query parameters
         let predicate = NSPredicate(value: true)
         // Step 2 - Create the query needed for the perform(query) method
@@ -77,17 +66,13 @@ class HypeController {
         publicDB.perform(query, inZoneWith: nil) { (records, error) in
             // Handle the optional error
             if let error = error {
-                print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
-                completion(.failure(.ckError(error)))
-                return
+                return completion(.failure(.ckError(error)))
             }
             // Unwrap the found CKRecord objects
-            guard let records = records else { completion(.failure(.couldNotUnwrap)) ; return }
+            guard let records = records else { return completion(.failure(.couldNotUnwrap)) }
             print("Fetched Hypes successfully")
             // Map through the found records, appling the Hype(ckRecord:) convenience init method as the transform
             let hypes = records.compactMap({ Hype(ckRecord: $0) })
-            // Set the Source of Truth array
-            self.hypes = hypes
             // Complete with success
             completion(.success(hypes))
         }
@@ -104,7 +89,7 @@ class HypeController {
      - completion: Escaping completion block for the method
      - success: Boolean value indicating success or falure of the CKModifyRecordsOperation
      */
-    func update(_ hype: Hype, completion: @escaping (_ result: Result<Hype?, HypeError>) -> Void) {
+    func update(_ hype: Hype, completion: @escaping (Result<Hype?, HypeError>) -> Void) {
         // Step 2.a Create the record to save (update)
         let record = CKRecord(hype: hype)
         // Step 2 - Create the operation
@@ -114,14 +99,12 @@ class HypeController {
         operation.qualityOfService = .userInteractive
         operation.modifyRecordsCompletionBlock = { (records, _, error) in
             if let error = error {
-                print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
-                completion(.failure(.ckError(error)))
-                return
+                return completion(.failure(.ckError(error)))
             }
             
             guard let record = records?.first,
                 let hype = Hype(ckRecord: record)
-                else { completion(.failure(.couldNotUnwrap)) ; return }
+                else { return completion(.failure(.couldNotUnwrap)) }
             print("Updated \(record.recordID.recordName) successfully in CloudKit")
             completion(.success(hype))
         }
@@ -137,7 +120,7 @@ class HypeController {
      - completion: Escaping completion block for the method
      - success: Boolean value indicating success or falure of the CKModifyRecordsOperation
      */
-    func delete(_ hype: Hype, completion: @escaping (_ result: Result<Bool, HypeError>) -> Void) {
+    func delete(_ hype: Hype, completion: @escaping (Result<Bool, HypeError>) -> Void) {
         // Step 2 - Declare the operation
         let operation = CKModifyRecordsOperation(recordsToSave: nil, recordIDsToDelete: [hype.recordID])
         // Step 3 - Set the properties on the operation
@@ -145,8 +128,7 @@ class HypeController {
         operation.qualityOfService = .userInteractive
         operation.modifyRecordsCompletionBlock = {records, _, error in
             if let error = error {
-                print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
-                completion(.failure(.ckError(error)))
+                return completion(.failure(.ckError(error)))
             }
             
             if records?.count == 0 {
@@ -154,7 +136,7 @@ class HypeController {
                 completion(.success(true))
             } else {
                 print("Unaccounted records were returned when trying to delete")
-                completion(.failure(.unexpectedRecordsFound))
+                return completion(.failure(.unexpectedRecordsFound))
             }
         }
         // Step 1 - Add the operation to the database
@@ -167,7 +149,7 @@ class HypeController {
      - completion: Escaping completion block for the method
      - error: Optional error returned when saving the CKQuerySubscription to the database
      */
-    func subscribeForRemoteNotifications(completion: @escaping (_ error: Error?) -> Void) {
+    func subscribeForRemoteNotifications(completion: @escaping (Result<Bool, HypeError>) -> Void) {
         // Step 2 - Create the needed query to pass into the subscription
         let predicate = NSPredicate(value: true)
         // Step 1 - Create the CKQuerySubscription object
@@ -184,9 +166,9 @@ class HypeController {
         publicDB.save(subscription) { (_, error) in
             if let error = error {
                 print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
-                completion(error)
+                completion(.failure(.ckError(error)))
             }
-            completion(nil)
+            completion(.success(true))
         }
     }
 }

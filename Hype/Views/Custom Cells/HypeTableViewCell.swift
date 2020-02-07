@@ -45,10 +45,14 @@ class HypeTableViewCell: UITableViewCell {
     
     func updateUser(for hype: Hype) {
         if hype.user == nil {
-            UserController.shared.fetchUserFor(hype) { (user) in
-                guard let user = user else { return }
-                hype.user = user
-                self.setUserInfo(for: user)
+            UserController.shared.fetchUserFor(hype) { (result) in
+                switch result {
+                case .success(let user):
+                    hype.user = user
+                    self.setUserInfo(for: user)
+                case .failure(let error):
+                    print(error.errorDescription)
+                }
             }
         }
     }

@@ -12,7 +12,7 @@ import CloudKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         // MARK: - Day 2 Changes
@@ -32,8 +32,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        HypeController.shared.subscribeForRemoteNotifications { (error) in
-            if let error = error {
+        HypeController.shared.subscribeForRemoteNotifications { (result) in
+            switch result {
+            case .success(_):
+                print("successfully registered for remote notifications")
+            case .failure(let error):
                 print("Error in \(#function) : \(error.localizedDescription) \n---\n \(error)")
             }
         }
